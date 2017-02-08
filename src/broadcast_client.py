@@ -27,7 +27,7 @@ class BroadcastClient(object):
   def spin(self, callback):
     while self.running:
       try:
-        data, addr = self.sock.recvfrom(1024)
+        data, addr = self.sock.recvfrom(10240)
         data = pickle.loads(data)
         callback(data)
       except socket.timeout:

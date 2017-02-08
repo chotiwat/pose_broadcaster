@@ -49,4 +49,8 @@
     <remap from="tag_detections" to="tag_detections_throttle" />
     <param name="port" type="int" value="$(arg port)" />
   </node>
+
+  <node pkg="tf" type="static_transform_publisher" name="fixed_marker_transform" args="0 0 0 0 0 0 1 /ar_marker_0 /map 10" />
+
+  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find pose_broadcaster)/launch/map.rviz" />
 </launch>
