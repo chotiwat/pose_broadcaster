@@ -1,9 +1,9 @@
 <launch>
-  <arg name="image_width" default="640" />
-  <arg name="image_height" default="480" />
-  <arg name="framerate" default="60" />
+  <arg name="image_width" default="1280" />
+  <arg name="image_height" default="960" />
+  <arg name="framerate" default="30" />
   <arg name="video_device" default="/dev/video0" />
-  <arg name="tag_family" default="25h9" />
+  <arg name="tag_family" default="36h11" />
 
   <arg name="port" default="5555" />
   <arg name="broadcast_rate" default="10" />
@@ -36,9 +36,11 @@
     <!-- Describe the tags -->
     <rosparam param="tag_descriptions">
       [
-        {id: 0, size: 0.038, frame_id: ar_marker_0},
-        {id: 1, size: 0.038, frame_id: ar_marker_1},
-        {id: 2, size: 0.038, frame_id: ar_marker_2}
+        {id: 0, size: 0.055, frame_id: ar_marker_0},
+        {id: 1, size: 0.055, frame_id: ar_marker_1},
+        {id: 2, size: 0.055, frame_id: ar_marker_2},
+        {id: 3, size: 0.055, frame_id: ar_marker_3},
+        {id: 4, size: 0.055, frame_id: ar_marker_4}
       ]
     </rosparam>
   </node>

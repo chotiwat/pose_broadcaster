@@ -28,7 +28,7 @@ class Broadcaster(object):
       return None
     return {
       'id': detection.id,
-      'time': detection.pose.header.stamp,
+      'time': detection.pose.header.stamp.to_sec(),
       'position': dict(zip('xyz', p)),
       'orientation': dict(zip('xyzw', o))
     }
