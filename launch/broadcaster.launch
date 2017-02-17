@@ -50,6 +50,7 @@
   <node pkg="pose_broadcaster" type="broadcaster.py" name="broadcaster" output="screen">
     <remap from="tag_detections" to="tag_detections_throttle" />
     <param name="port" type="int" value="$(arg port)" />
+    <param name="frame_prefix" type="string" value="ar_marker_" />
   </node>
 
   <node pkg="tf" type="static_transform_publisher" name="fixed_marker_transform" args="0 0 0 0 0 0 1 /ar_marker_0 /map 10" />

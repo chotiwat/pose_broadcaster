@@ -6,10 +6,10 @@ import socket
 import cPickle
 from apriltags_ros.msg import AprilTagDetectionArray
 
-class Broadcaster(object):
+class Broadcaster:
   """docstring for Broadcaster"""
-  def __init__(self, port = 5555):
-    super(Broadcaster, self).__init__()
+  def __init__(self, frame_prefix, port = 5555):
+    self.frame_prefix = frame_prefix
     self.port = port
     self.next_frame = 1;
     self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -23,6 +23,7 @@ class Broadcaster(object):
 
   def format_detection(self, detection):
     try:
+      frame = '%s%d' % (self.frame_prefix, detection.id)
       p, o = self.tfListener.lookupTransform('/map', detection.pose.header.frame_id, rospy.Time())
     except tf.Exception as e:
       return None
@@ -47,7 +48,8 @@ class Broadcaster(object):
 def main():
   rospy.init_node('broadcaster')
   port = rospy.get_param('~port')
-  broadcaster = Broadcaster(port)
+  frame_prefix = rospy.get_param('~frame_prefix')
+  broadcaster = Broadcaster(frame_prefix, port)
   rospy.loginfo('Broadcasting to port %d...', port)
   rospy.spin()
 
