@@ -24,14 +24,15 @@ class Broadcaster:
   def format_detection(self, detection):
     try:
       frame = '%s%d' % (self.frame_prefix, detection.id)
-      p, o = self.tfListener.lookupTransform('/map', detection.pose.header.frame_id, rospy.Time())
+      p, o = self.tfListener.lookupTransform('/map', frame, rospy.Time())
+      rpy = tf.transformations.euler_from_quaternion(o)
     except tf.Exception as e:
       return None
     return {
       'id': detection.id,
       'time': detection.pose.header.stamp.to_sec(),
       'position': dict(zip('xyz', p)),
-      'orientation': dict(zip('xyzw', o))
+      'orientation': dict(zip('rpy', rpy))
     }
 
   def detection_callback(self, data):
