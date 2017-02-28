@@ -36,11 +36,11 @@
     <!-- Describe the tags -->
     <rosparam param="tag_descriptions">
       [
-        {id: 0, size: 0.055, frame_id: ar_marker_0},
-        {id: 1, size: 0.055, frame_id: ar_marker_1},
-        {id: 2, size: 0.055, frame_id: ar_marker_2},
-        {id: 3, size: 0.055, frame_id: ar_marker_3},
-        {id: 4, size: 0.055, frame_id: ar_marker_4}
+        {id: 0, size: 0.079, frame_id: ar_marker_0},
+        {id: 1, size: 0.079, frame_id: ar_marker_1},
+        {id: 2, size: 0.079, frame_id: ar_marker_2},
+        {id: 3, size: 0.079, frame_id: ar_marker_3},
+        {id: 4, size: 0.079, frame_id: ar_marker_4}
       ]
     </rosparam>
   </node>
@@ -50,10 +50,13 @@
   <node pkg="pose_broadcaster" type="broadcaster.py" name="broadcaster" output="screen">
     <remap from="tag_detections" to="tag_detections_throttle" />
     <param name="port" type="int" value="$(arg port)" />
-    <param name="frame_prefix" type="string" value="ar_marker_" />
+    <param name="frame_prefix" type="string" value="robot_" />
   </node>
 
   <node pkg="tf" type="static_transform_publisher" name="fixed_marker_transform" args="0 0 0 0 0 0 1 /ar_marker_0 /map 10" />
+
+  <!-- tag to robot transform -->
+  <node pkg="tf" type="static_transform_publisher" name="robot_marker_transform_1" args="0 -0.097 0 0 0 0 1 /ar_marker_1 /robot_1 10" />
 
   <node pkg="rviz" type="rviz" name="rviz" args="-d $(find pose_broadcaster)/launch/map.rviz" />
 </launch>
