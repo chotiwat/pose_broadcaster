@@ -27,6 +27,8 @@ class Broadcaster:
     self.sock.sendto(cPickle.dumps(data, -1), ('<broadcast>', self.port))
 
   def format_detection(self, detection):
+    if detection.id == 0:
+      return None
     try:
       frame = '%s%d' % (self.frame_prefix, detection.id)
       p, o = self.tfListener.lookupTransform('/map', frame, rospy.Time())
