@@ -1,9 +1,11 @@
 <launch>
-  <arg name="image_width" default="1280" />
-  <arg name="image_height" default="960" />
-  <arg name="framerate" default="30" />
+  <arg name="image_width" default="1920" />
+  <arg name="image_height" default="1080" />
+  <arg name="framerate" default="15" />
   <arg name="video_device" default="/dev/video0" />
   <arg name="tag_family" default="36h11" />
+  <arg name="use_apriltag" default="false" />
+  <arg name="gui" default="false" />
 
   <arg name="port" default="5555" />
   <arg name="broadcast_rate" default="10" />
@@ -18,45 +20,73 @@
     <param name="framerate" value="$(arg framerate)" />
   </node>
 
-  <node pkg="apriltags_ros" type="apriltag_detector_node" name="apriltag_detector" output="screen">
-    <!-- Remap topic required by the node to custom topics -->
-    <remap from="image_rect" to="/usb_cam/image_raw" />
-    <remap from="camera_info" to="/usb_cam/camera_info" />
+  <group if="$(arg use_apriltag)">
+    <node pkg="apriltags_ros" type="apriltag_detector_node" name="apriltag_detector" output="screen">
+      <!-- Remap topic required by the node to custom topics -->
+      <remap from="image_rect" to="/usb_cam/image_raw" />
+      <remap from="camera_info" to="/usb_cam/camera_info" />
 
-    <!-- Optional: Subscribe to the compressed stream-->
-    <param name="image_transport" type="str" value="raw" />
+      <!-- Optional: Subscribe to the compressed stream-->
+      <param name="image_transport" type="str" value="raw" />
 
-    <!-- Select the tag family: 16h5, 25h7, 25h9, 36h9, or 36h11(default) -->
-    <param name="tag_family" type="str" value="$(arg tag_family)" />
+      <!-- Select the tag family: 16h5, 25h7, 25h9, 36h9, or 36h11(default) -->
+      <param name="tag_family" type="str" value="$(arg tag_family)" />
 
-    <!-- Enable projected optical measurements for more accurate tag transformations -->
-    <!-- This exists for backwards compatability and should be left true for new setups -->
-    <param name="projected_optics" type="bool" value="true" />
+      <!-- Enable projected optical measurements for more accurate tag transformations -->
+      <!-- This exists for backwards compatability and should be left true for new setups -->
+      <param name="projected_optics" type="bool" value="true" />
 
-    <!-- Describe the tags -->
-    <rosparam param="tag_descriptions">
-      [
-        {id: 0, size: 0.079, frame_id: ar_marker_0},
-        {id: 1, size: 0.079, frame_id: ar_marker_1},
-        {id: 2, size: 0.079, frame_id: ar_marker_2},
-        {id: 3, size: 0.079, frame_id: ar_marker_3},
-        {id: 4, size: 0.079, frame_id: ar_marker_4}
-      ]
-    </rosparam>
-  </node>
+      <!-- Describe the tags -->
+      <rosparam param="tag_descriptions">
+        [
+          {id: 0, size: 0.079, frame_id: ar_marker_0},
+          {id: 1, size: 0.079, frame_id: ar_marker_1},
+          {id: 2, size: 0.079, frame_id: ar_marker_2},
+          {id: 3, size: 0.079, frame_id: ar_marker_3},
+          {id: 4, size: 0.079, frame_id: ar_marker_4},
+          {id: 11, size: 0.136, frame_id: ar_marker_11}
+        ]
+      </rosparam>
+    </node>
 
-  <node pkg="topic_tools" type="throttle" name="tag_throttler" args="messages /tag_detections $(arg broadcast_rate)" />
+    <node pkg="topic_tools" type="throttle" name="tag_throttler" args="messages /tag_detections $(arg broadcast_rate)" />
+  </group>
+
+  <group unless="$(arg use_apriltag)">
+    <arg name="marker_size" default="10" />
+    <!-- <arg name="marker_size" default="7.9" /> -->
+    <arg name="max_new_marker_error" default="0.008" />
+    <arg name="max_track_error" default="0.2" />
+    <arg name="cam_image_topic" default="/usb_cam/image_raw" />
+    <arg name="cam_info_topic" default="/usb_cam/camera_info" />
+    <arg name="output_frame" default="/usb_cam" />
+    <arg name="frequency" default="$(arg broadcast_rate)" />
+
+    <node name="ar_track_alvar" pkg="ar_track_alvar" type="individualMarkersNoKinect" respawn="false" output="screen" args="$(arg marker_size) $(arg max_new_marker_error) $(arg max_track_error) $(arg cam_image_topic) $(arg cam_info_topic) $(arg output_frame) $(arg frequency)" />
+
+    <!-- <node pkg="topic_tools" type="throttle" name="tag_throttler" args="messages /ar_pose_marker $(arg broadcast_rate)" /> -->
+  </group>
 
   <node pkg="pose_broadcaster" type="broadcaster.py" name="broadcaster" output="screen">
     <remap from="tag_detections" to="tag_detections_throttle" />
     <param name="port" type="int" value="$(arg port)" />
     <param name="frame_prefix" type="string" value="robot_" />
+    <param name="use_apriltag" type="boolean" value="$(arg use_apriltag)" />
   </node>
 
   <node pkg="tf" type="static_transform_publisher" name="fixed_marker_transform" args="0 0 0 0 0 0 1 /ar_marker_0 /map 10" />
 
   <!-- tag to robot transform -->
-  <node pkg="tf" type="static_transform_publisher" name="robot_marker_transform_1" args="0 -0.097 0 0 0 0 1 /ar_marker_1 /robot_1 10" />
+  <!-- <node pkg="tf" type="static_transform_publisher" name="robot_marker_transform_1" args="0.068 -0.068 0 0 0 0 1 /ar_marker_1 /robot_1 10" /> -->
+  <node pkg="tf" type="static_transform_publisher" name="robot_marker_transform_1" args="0.045 -0.061 0 0 0 0 1 /ar_marker_1 /robot_1 10" />
+  <!-- <node pkg="tf" type="static_transform_publisher" name="robot_marker_transform_1" args="0 -0.07 0 0 0 0 1 /ar_marker_1 /robot_1 10" /> -->
+  <!-- <node pkg="tf" type="static_transform_publisher" name="robot_marker_transform_1" args="0.072 -0.058 0 0 0 0 1 /ar_marker_1 /robot_1 10" /> -->
 
-  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find pose_broadcaster)/launch/map.rviz" />
+  <node pkg="tf" type="static_transform_publisher" name="robot_marker_transform_2" args="0.045 -0.061 0 0 0 0 1 /ar_marker_2 /robot_2 10" />
+  <node pkg="tf" type="static_transform_publisher" name="robot_marker_transform_3" args="0.045 -0.061 0 0 0 0 1 /ar_marker_3 /robot_3 10" />
+  <node pkg="tf" type="static_transform_publisher" name="robot_marker_transform_4" args="0.045 -0.061 0 0 0 0 1 /ar_marker_4 /robot_4 10" />
+  <node pkg="tf" type="static_transform_publisher" name="robot_marker_transform_5" args="0.045 -0.061 0 0 0 0 1 /ar_marker_5 /robot_5 10" />
+  <node pkg="tf" type="static_transform_publisher" name="robot_marker_transform_6" args="0.045 -0.061 0 0 0 0 1 /ar_marker_6 /robot_6 10" />
+
+  <node if="$(arg gui)" pkg="rviz" type="rviz" name="rviz" args="-d $(find pose_broadcaster)/launch/map.rviz" />
 </launch>
