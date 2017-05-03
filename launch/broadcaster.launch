@@ -78,8 +78,15 @@
 
   <!-- tag to robot transform -->
   <!-- <node pkg="tf" type="static_transform_publisher" name="robot_marker_transform_1" args="0.068 -0.068 0 0 0 0 1 /ar_marker_1 /robot_1 10" /> -->
-  <node pkg="tf" type="static_transform_publisher" name="robot_marker_transform_1" args="0 -0.07 0 0 0 0 1 /ar_marker_1 /robot_1 10" />
+  <node pkg="tf" type="static_transform_publisher" name="robot_marker_transform_1" args="0.045 -0.061 0 0 0 0 1 /ar_marker_1 /robot_1 10" />
+  <!-- <node pkg="tf" type="static_transform_publisher" name="robot_marker_transform_1" args="0 -0.07 0 0 0 0 1 /ar_marker_1 /robot_1 10" /> -->
   <!-- <node pkg="tf" type="static_transform_publisher" name="robot_marker_transform_1" args="0.072 -0.058 0 0 0 0 1 /ar_marker_1 /robot_1 10" /> -->
+
+  <node pkg="tf" type="static_transform_publisher" name="robot_marker_transform_2" args="0.045 -0.061 0 0 0 0 1 /ar_marker_2 /robot_2 10" />
+  <node pkg="tf" type="static_transform_publisher" name="robot_marker_transform_3" args="0.045 -0.061 0 0 0 0 1 /ar_marker_3 /robot_3 10" />
+  <node pkg="tf" type="static_transform_publisher" name="robot_marker_transform_4" args="0.045 -0.061 0 0 0 0 1 /ar_marker_4 /robot_4 10" />
+  <node pkg="tf" type="static_transform_publisher" name="robot_marker_transform_5" args="0.045 -0.061 0 0 0 0 1 /ar_marker_5 /robot_5 10" />
+  <node pkg="tf" type="static_transform_publisher" name="robot_marker_transform_6" args="0.045 -0.061 0 0 0 0 1 /ar_marker_6 /robot_6 10" />
 
   <node if="$(arg gui)" pkg="rviz" type="rviz" name="rviz" args="-d $(find pose_broadcaster)/launch/map.rviz" />
 </launch>
